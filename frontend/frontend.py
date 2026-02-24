@@ -10,7 +10,7 @@ st.title(" Book Management Dashboard")
 
 menu = st.sidebar.radio(
     "Navigation",
-    ["View Books", "Search", "Add Book", "Delete Book"]
+    ["View Books", "Search", "Add Book", "Update Book", "Delete Book"]
 )
 
 # View Books
@@ -73,7 +73,37 @@ elif menu == "Add Book":
                 st.success("Book Added")
             else:
                 st.error("Error")
+# Update Book
+elif menu == "Update Book":
+    st.subheader("Update Book")
 
+    with st.form("update_form"):
+        book_id = st.number_input("Book ID", min_value=1)
+
+        title = st.text_input("New Title")
+        author = st.text_input("New Author")
+        description = st.text_area("New Description")
+        rating = st.slider("New Rating", 1, 5)
+        year = st.number_input("New Published Year", 2000, 2030)
+
+        submit = st.form_submit_button("Update Book")
+
+        if submit:
+            data = {
+                "id": book_id,
+                "title": title,
+                "author": author,
+                "description": description,
+                "rating": rating,
+                "published_date": year
+            }
+
+            res = requests.put(f"{BASE_URL}/books/update_book", json=data)
+
+            if res.status_code == 200:
+                st.success("Book Updated Successfully")
+            else:
+                st.error("Book not found")
 
 # Delete
 elif menu == "Delete Book":

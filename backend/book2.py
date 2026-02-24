@@ -99,15 +99,37 @@ def find_book_id(book: Book):
     return book
 
 
-@app.put("/books/update_book", status_code=status.HTTP_204_NO_CONTENT)
-async def update_book(book: BookRequest):
-    book_changed = False
-    for i in range(len(BOOKS)):
-        if BOOKS[i].id == book.id:
-            BOOKS[i] = book
-            book_changed = True
-    if not book_changed:
-        raise HTTPException(status_code=404, detail='Item not found')
+# Update Book
+elif menu == "Update Book":
+    st.subheader("Update Book")
+
+    with st.form("update_form"):
+        book_id = st.number_input("Book ID", min_value=1)
+
+        title = st.text_input("New Title")
+        author = st.text_input("New Author")
+        description = st.text_area("New Description")
+        rating = st.slider("New Rating", 1, 5)
+        year = st.number_input("New Published Year", 2000, 2030)
+
+        submit = st.form_submit_button("Update Book")
+
+        if submit:
+            data = {
+                "id": book_id,
+                "title": title,
+                "author": author,
+                "description": description,
+                "rating": rating,
+                "published_date": year
+            }
+
+            res = requests.put(f"{BASE_URL}/books/update_book", json=data)
+
+            if res.status_code == 200:
+                st.success("Book Updated Successfully")
+            else:
+                st.error("Book not found")
 
 
 @app.delete("/books/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
